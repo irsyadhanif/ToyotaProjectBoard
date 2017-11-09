@@ -2,18 +2,48 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="board.css">
+    <link href="https://fonts.googleapis.com/css?family=Oswald|PT+Serif" rel="stylesheet">
+    <script type="text/javascript" src="board.js"></script>
     <title>Hello World!</title>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-  </body>
+    <div id="board">
 
-  <script>
-    // You can also require other files to run in this process
-    require('./renderer.js')
-  </script>
+      <div id="redCol">
+        <div id="redCards">
+          <div class="redCard">
+            <h1 onclick="catchIt()">Title</h1>
+            <p onclick="catchIt()">description</p>
+          </div>
+        </div>
+        <button class="addCard" id="addRedCard" onclick="addRedCard()">+</button>
+      </div>
+
+      <div id="yellowCol">
+        <div id="yellowCards">
+          <div class="yellowCard">
+           <h1 onclick="catchIt()">Title</h1>
+            <p onclick="catchIt()">description</p>
+          </div>
+        </div>
+        <button class="addCard" id="addYellowCard" onclick="addYellowCard()">+</button>
+      </div>
+
+      <div id="greenCol">
+        <div id="greenCards">
+          <div class="greenCard">
+            <h1 onclick="catchIt()">Title</h1>
+            <p onclick="catchIt()">description</p>
+          </div>
+        </div>
+        <button class="addCard" id="addGreenCard" onclick="addGreenCard()">+</button>
+      </div>
+
+    </div>
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js')
+    </script>
+  </body>
 </html>
