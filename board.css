@@ -97,6 +97,22 @@ p {
     transition: 0.3s;
 }
 
+.titleText {
+	line-height: 1.5em;
+    height: 1.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.descriptionText {
+	line-height: 1.5em;
+    height: 1.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .addCard {
 	padding-top: 8px;
 	padding-bottom: 8px;
@@ -123,6 +139,54 @@ p {
     transition: 0.3s;
 }
 
+#fadedBackground {
+	background-color: #000;
+	opacity: 0.5;
+	height: 100%;
+	width: 100%;
+	position: fixed;
+}
+
+#largeCard {
+	color: black;
+	background-color: white;
+	border-radius: 5px;
+	border-color: black;
+	border-width: 5px;
+	margin-left: 25%;
+	margin-right: 25%;
+	margin-top: 5%;
+	padding: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    height: 80%;
+	width: 50%;
+	position: fixed;
+}
+
+.largeCardTitle {
+	text-align: center;
+}
+
+.largeCardDescription {
+	text-align: justify;
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+.deleteCard {
+	text-align: center;
+	position: absolute;
+	margin-left: 25%;
+	margin-right: 25%;
+	width: 50%;
+	padding: 10px;
+	bottom: 0;
+	border-radius: 5px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+	color: #FFF;
+	background-color: #D44;
+}
 
 
 
