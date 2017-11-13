@@ -39,7 +39,7 @@ function deleteRedCard(idToDelete) {
 function enlargeCard(type, id) {
 	enlargeCardType = type
 	enlargeCardId = id
-	var largeCard = create("<div id=\"fadedBackground\" onclick=\"minimizeCard()\"></div><div id=\"largeCard\"><h1 class=\"largeCardTitle\" onclick=\"catchIt()\">Title</h1><p class=\"largeCardDescription\" onclick\"catchIt()\">"+loremText+"</p><p class=\"deleteCard\" onclick=\"deleteCard()\">Delete Card</p></div>")
+	var largeCard = create("<div id=\"fadedBackground\" onclick=\"minimizeCard()\"></div><div id=\"largeCard\"><h1 class=\"largeCardTitle\" onclick=\"catchIt()\">Title</h1><p class=\"largeCardDescription\" onclick=\"catchIt()\">"+loremText+"</p><p class=\"deleteCard\" onclick=\"deleteCard()\">Delete Card</p></div>")
 	document.getElementById("body").insertBefore(largeCard, document.getElementById("body").firstChild)
 }
 
@@ -92,14 +92,20 @@ var butt;
 
 if (document.getElementById && document.createElement) {
 	butt = document.createElement('BUTTON');
-	var buttext = document.createTextNode('Ready!');
+	var buttext = document.createTextNode('save');
 	butt.appendChild(buttext);
 	butt.onclick = saveEdit;
 }
 
 function catchIt(e) {
-	if (editing) return;
-	if (!document.getElementById || !document.createElement) return;
+	if (editing) {
+		console.log("editing");
+		return;
+	}
+	if (!document.getElementById || !document.createElement) {
+		console.log("doc");
+		return;
+	}
 	if (!e) var obj = window.event.srcElement;
 	else var obj = e.target;
 	while (obj.nodeType != 1) {
@@ -141,6 +147,7 @@ function saveEdit() {
 		document.getElementById(enlargeCardId).getElementsByTagName("p")[0].innerHTML = area.value;
 	}
 	var z = area.parentNode;
+	y.addEventListener("click", catchIt)
 	y.innerHTML = area.value;
 	z.insertBefore(y,area);
 	z.removeChild(area);
