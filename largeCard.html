@@ -1,0 +1,39 @@
+<!-- largeCardHtml style -->
+<div id="fadedBackground" onclick=\"minimizeCard()\">
+	
+</div>
+<div id="largeCard">
+	<h1 class="largeCardTitle" onclick="catchIt()">Title</h1>
+	<p class="largeCardDescription" onclick="catchIt()">"+loremText+"</p>
+	<div id="commentSection">
+		<div id="comment1" class="comment">
+			<p class="deleteComment" onclick="deleteComment()">Delete</p>
+			<p class="divider"> | </p>
+			<p class="commentText">test comment 1 - test text</p>
+		</div>
+		<div id="comment2" class="comment">
+			<p class="deleteComment" onclick="deleteComment()">Delete</p>
+			<p class="divider"> | </p>
+			<p class="commentText">test comment 2 - test text</p>
+		</div>
+		<div id="comment3" class="comment">
+			<p class="deleteComment" onclick="deleteComment()">Delete</p>
+			<p class="divider"> | </p>
+			<p class="commentText">test comment 3 - test text</p>
+		</div>
+		<p id="addComment" onclick="addComment()">add comment</p>
+	</div>
+	<p class="deleteCard" onclick="deleteCard()">Delete Card</p>
+</div>
+<!-- end style -->
+
+<div id="commentSection">
+	<div id="comments"></div>
+	<p id="addComment" onclick="addComment()">add comment</p>
+</div>
+
+<div id="comment1" class="comment">
+	<p class="deleteComment" onclick="deleteComment()">Delete</p>
+	<p class="divider"> | </p>
+	<p class="commentText">test comment 1 - test text</p>
+</div>
