@@ -4,10 +4,11 @@ var loremText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
 var cardId = 1;
 var enlargeCardId;
 var enlargeCardType;
+var cardDragId;
 
 function addGreenCard() {
 	cardId++;
-	var card = create("<div id=\""+cardId+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+cardId+"\')\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
+	var card = create("<div id=\""+cardId+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+cardId+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
 	document.getElementById("greenCards").appendChild(card)
 }
 
@@ -17,7 +18,7 @@ function deleteGreenCard(idToDelete) {
 
 function addYellowCard() {
 	cardId++;
-	var card = create("<div id=\""+cardId+"\" class=\"yellowCard\" onclick=\"enlargeCard(\'yellow\',\'"+cardId+"\')\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
+	var card = create("<div id=\""+cardId+"\" class=\"yellowCard\" onclick=\"enlargeCard(\'yellow\',\'"+cardId+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
 	document.getElementById("yellowCards").appendChild(card)
 }
 
@@ -27,7 +28,7 @@ function deleteYellowCard(idToDelete) {
 
 function addRedCard() {
 	cardId++;
-	var card = create("<div id=\""+cardId+"\" class=\"redCard\" onclick=\"enlargeCard(\'red\',\'"+cardId+"\')\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
+	var card = create("<div id=\""+cardId+"\" class=\"redCard\" onclick=\"enlargeCard(\'red\',\'"+cardId+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">Title</h1><p class=\"descriptionText\">"+loremText+"</p></div>")
 	document.getElementById("redCards").appendChild(card)
 }
 
@@ -67,6 +68,22 @@ function create(htmlStr) {
         frag.appendChild(temp.firstChild);
     }
     return frag;
+}
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+    cardDragId = ev.target.id;
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = document.getElementById(cardDragId);
+    var cards = ev.target.firstElementChild;
+    cards.appendChild(data);
 }
 
 var editing  = false;

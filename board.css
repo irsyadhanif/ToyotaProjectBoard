@@ -132,6 +132,7 @@ p {
 	white-space: nowrap;
 	text-decoration: none;
 	-webkit-appearance: button;
+	margin-top: 20px;
 	margin-left: 50%;
 	margin-right: 50%;
 	margin-bottom: 10px;
