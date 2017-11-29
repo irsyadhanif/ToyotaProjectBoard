@@ -1,17 +1,20 @@
 html {
 	width: 100%;
 	min-height: 100%;
-	height: auto;
+	height: 100%;
 	margin: 0px;
 	padding: 0px;
+	max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
 	width: 100%;
 	min-height: 100%;
-	height: auto;
 	margin: 0px;
-	padding: 0px;
+	padding: -50px;
+	max-width: 100%;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -25,7 +28,8 @@ p {
 #board {
   width: 100%;
   min-height: 100%;
-	height: auto;
+	height: 2000px; /* FIXME: Too hacky */
+	overflow: auto; /* FIXME: ugly */
 }
 
 #board:after {
@@ -34,47 +38,27 @@ p {
   clear: both;
 }
 
-.colBG {
-	width: 33.33%;
-	height: 100%;
-	position: fixed;
-}
-
 #greenCol {
 	float: left;
   width: 33.33%;
-	height: 100%;
+	min-height: 100%;
 	margin: 0px;
-	position: relative;
-}
-
-.greenBG {
-	margin-left: 66.66%;
 	background-color: green;
 }
 
 #yellowCol {
 	float: left;
   width: 33.33%;
-	height: 100%;
+	min-height: 100%;
 	margin: 0px;
-	position: relative;
-}
-
-.yellowBG {
-	margin-left: 33.33%;
 	background-color: yellow;
 }
 
 #redCol {
 	float: left;
   width: 33.33%;
-	height: 100%;
+	min-height: 100%;
 	margin: 0px;
-	position: relative;
-}
-
-.redBG {
 	background-color: red;
 }
 
