@@ -29,7 +29,7 @@ p {
   width: 100%;
   min-height: 100%;
 	height: 2000px; /* FIXME: Too hacky */
-	overflow: auto; /* FIXME: ugly */
+	overflow: visible; /* FIXME: ugly */
 }
 
 #board:after {
