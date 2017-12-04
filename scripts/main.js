@@ -1,4 +1,3 @@
-"use strict";
 
 // define(function (require) {
 //   //var sqlController = require("file:///./sqlController.js")

@@ -1,28 +1,25 @@
-"use strict";
 
-class Entry {
-    constructor (table) {
-        this.table = table;
-        this.fields = [];
-        this.entries = [];
-    }
+function Entry(table) {
+    this.table = table;
+    this.fields = [];
+    this.entries = [];
+}
 
-    addEntry(field, entry) {
-        this.fields.push(field);
-        this.entries.push('\'' + entry + '\'');
-    };
+Entry.prototype.addEntry = function(field, entry) {
+    this.fields.push(field);
+    this.entries.push('\'' + entry + '\'');
+};
 
-    getFields() {
-        return this.fields;
-    };
+Entry.prototype.getFields = function() {
+    return this.fields;
+};
 
-    getEntries() {
-        return this.entries;
-    };
+Entry.prototype.getEntries = function() {
+    return this.entries;
+};
 
-    getTable() {
-        return this.table;
-    };
+Entry.prototype.getTable = function() {
+    return this.table;
 };
 
 module.exports = Entry;

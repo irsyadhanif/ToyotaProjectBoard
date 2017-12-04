@@ -1,67 +1,73 @@
+var imported = document.createElement('script');
+imported.src = 'http://localhost:3000/socket.io/socket.io.js';
+document.head.appendChild(imported);
+
+
+
+
 //Used for testing purposes only
 var loremText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-var cardId = 0;
+var cardId = 1;
+var commentId = 1;
 var enlargeCardId;
 var enlargeCardType;
 var cardDragId;
 var cardObjects = [];
 
-function connectData() {
-	var ref = firebase.database().ref('cards/');
-	ref.on('value', function(snapshot) {
-	  updateCards(snapshot);
+function color ($colr) {
+	//var socket = io('http://localhost:3000');
+	//socket.emit('color', $colr);
+};
+
+function updateCommentId() {
+	var socket = io('http://localhost:3000');
+	socket.emit('commentID', "funfun");
+	socket.on('commentId', function(id) {
+		setTimeout (function() {
+			commentId = parseInt(id);
+		}, (100));
 	});
 }
 
-function updateCards(snapshot) {
-	console.log("update");
-	for (var key in snapshot.val()) {
-		var item = snapshot.val()[key];
-		console.log(key);
-		var card = getCardObjectById(key);
-		console.log(card);
-		if (card != false) {
-			card.updateCardType(item.cardType);
-			card.updateTitle(item.title);
-			card.updateDescription(item.description);
-			card.updateComments(item.comments);
-		} else {
-			var newCard = new CardObject(key, item.title, item.cardType, false);
-			newCard.updateDescription(item.description);
-			newCard.updateComments(item.comments);
-			cardObjects.push(newCard);
+function loadSQL() {
+	var socket = io('http://localhost:3000');
+	socket.on('sql', function(data) {
+		var cards = JSON.parse(data);
+		updateCommentId();
+		for (var i = 0; i < cards.length; i++) {
+			if (cards[i].COLOR == 'red')
+				addRedCard(cards[i]);
+			else if (cards[i].COLOR == 'yellow')
+				addYellowCard(cards[i]);
+			else
+				addGreenCard(cards[i]);
 		}
-	}
-	updateUI();
-}
+	});
+};
 
-window.onload = connectData;
+function sendSQL(action, table, id, colName, value) {
+	var socket = io('http://localhost:3000');
+	var data = {'action':action, 'table':table, 'id':id, 'col':colName, 'value':value};
+	socket.emit('sqlUpdate', JSON.stringify(data));
+	socket.on('cardId', function(id) {
+		setTimeout (function() {
+			cardId = parseInt(id);
+			return;
+		},(100));
+	});
+};
 
-function updateUI() {
-	// FIXME: ugly and inefficient
-	while (document.getElementById("greenCards").hasChildNodes()) {
-    document.getElementById("greenCards").removeChild(document.getElementById("greenCards").lastChild);
-	}
-	while (document.getElementById("yellowCards").hasChildNodes()) {
-    document.getElementById("yellowCards").removeChild(document.getElementById("yellowCards").lastChild);
-	}
-	while (document.getElementById("redCards").hasChildNodes()) {
-    document.getElementById("redCards").removeChild(document.getElementById("redCards").lastChild);
-	}
-	for (var i in cardObjects) {
-		switch(cardObjects[i].cardType) {
-			case "green":
-				addGreenCardToColumn(cardObjects[i]);
-				break;
-			case "yellow":
-				addYellowCardToColumn(cardObjects[i]);
-				break;
-			case "red":
-				addRedCardToColumn(cardObjects[i]);
-				break;
-		}
-	}
+function addCard(color) {
+	sendSQL('insert', 'card', color);
+	setTimeout( function() {
+		if (color == 'red')
+			addRedCard();
+		else if (color == 'yellow')
+			addYellowCard();
+		else
+			addGreenCard();
+	}, (400));
 }
 
 function getCardObjectById(id) {
@@ -71,78 +77,123 @@ function getCardObjectById(id) {
 	    	return cardObjects[i];
 	    }
 	}
-	return false;
 }
 
-function addGreenCard() {
-	cardId = cardObjects.length + 1;
-	var card = new CardObject(cardId, "Title", "green", true);
-	card.description = loremText;
+function addGreenCard(data) {
+	//color('green');
+	var title="",desc="",id=cardId,comms=[];
+	if (data === undefined) {
+		title = 'Title';
+		desc = "Add A Description";
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 1"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 2"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 3"});
+	} else {
+		title = data.TITLE;
+		desc = data.DESCRIPTION;
+		id = data.ID;
+		if (data.COMMENTS.length > 0)
+			for (var i=0; i<data.COMMENTS.length; i++)
+				comms.push(data.COMMENTS[i]);
+	}
+	var card = new CardObject(id, title);
+	card.description = desc;
+	card.comments = comms;
 	cardObjects.push(card);
-	addGreenCardToColumn(card);
-}
-
-function addGreenCardToColumn(newCard) {
-	var card = create("<div id=\""+newCard.id+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+newCard.id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+newCard.title+"</h1><p class=\"descriptionText\">"+newCard.description+"</p></div>");
+	var card = create("<div id=\""+id+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+title+"</h1><p class=\"descriptionText\">"+desc+"</p></div>");
 	document.getElementById("greenCards").appendChild(card);
 }
 
 function deleteGreenCard(idToDelete) {
 	document.getElementById(""+idToDelete).remove();
-	firebase.database().ref('cards/'+idToDelete).remove();
+	sendSQL('delete', 'card', idToDelete);
 }
 
-function addYellowCard() {
-	cardId = cardObjects.length + 1;
-	var card = new CardObject(cardId, "Title", "yellow", true);
-	card.description = loremText;
+function addYellowCard(data) {
+	//color('yellow');
+	var title="",desc="",id=cardId,comms=[];
+	if (data === undefined) {
+		title = 'Title';
+		desc = "Add A Description";
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 1"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 2"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 3"});
+	} else {
+		title = data.TITLE;
+		desc = data.DESCRIPTION;
+		id = data.ID;
+		if (data.COMMENTS.length > 0)
+			for (var i=0; i<data.COMMENTS.length; i++)
+				comms.push(data.COMMENTS[i]);
+	}
+	var card = new CardObject(id, title);
+	card.description = desc;
+	card.comments = comms;
 	cardObjects.push(card);
-	addYellowCardToColumn(card);
-}
-
-function addYellowCardToColumn(newCard) {
-	var card = create("<div id=\""+newCard.id+"\" class=\"yellowCard\" onclick=\"enlargeCard(\'yellow\',\'"+newCard.id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+newCard.title+"</h1><p class=\"descriptionText\">"+newCard.description+"</p></div>");
+	var card = create("<div id=\""+id+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+title+"</h1><p class=\"descriptionText\">"+desc+"</p></div>");
 	document.getElementById("yellowCards").appendChild(card);
 }
 
 function deleteYellowCard(idToDelete) {
 	document.getElementById(""+idToDelete).remove();
-	firebase.database().ref('cards/'+idToDelete).remove();
+	sendSQL('delete', 'card', idToDelete);
 }
 
-function addRedCard() {
-	cardId = cardObjects.length + 1;
-	var card = new CardObject(cardId, "Title", "red", true);
-	card.description = loremText;
+function addRedCard(data) {
+	//color('red');
+	var title="",desc="",id=cardId,comms=[];
+	if (data === undefined) {
+		title = 'Title';
+		desc = "Add A Description";
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 1"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 2"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 3"});
+	} else {
+		title = data.TITLE;
+		desc = data.DESCRIPTION;
+		id = data.ID;
+		if (data.COMMENTS.length > 0)
+			for (var i=0; i<data.COMMENTS.length; i++)
+				comms.push(data.COMMENTS[i]);
+	}
+	var card = new CardObject(id, title);
+	card.description = desc;
+	card.comments = comms;
 	cardObjects.push(card);
-	addRedCardToColumn(card);
-}
-
-function addRedCardToColumn(newCard) {
-	var card = create("<div id=\""+newCard.id+"\" class=\"redCard\" onclick=\"enlargeCard(\'red\',\'"+newCard.id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+newCard.title+"</h1><p class=\"descriptionText\">"+newCard.description+"</p></div>");
+	var card = create("<div id=\""+id+"\" class=\"greenCard\" onclick=\"enlargeCard(\'green\',\'"+id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+title+"</h1><p class=\"descriptionText\">"+desc+"</p></div>");
 	document.getElementById("redCards").appendChild(card);
 }
 
 function deleteRedCard(idToDelete) {
 	document.getElementById(""+idToDelete).remove();
-	firebase.database().ref('cards/'+idToDelete).remove();
+	sendSQL('delete', 'card', idToDelete);
 }
 
 function enlargeCard(type, id) {
 	enlargeCardType = type;
 	enlargeCardId = id;
 	var card = getCardObjectById(enlargeCardId);
-	var largeCard = create("<div id=\"fadedBackground\" onclick=\"minimizeCard()\"></div><div id=\"largeCard\"><h1 class=\"largeCardTitle\" onclick=\"catchIt()\">Title</h1><p class=\"largeCardDescription\" onclick=\"catchIt()\">"+loremText+"</p><div id=\"commentSection\"><div id=\"comments\"></div><p id=\"addComment\" onclick=\"addComment()\">add comment</p></div><p class=\"deleteCard\" onclick=\"deleteCard()\">Delete Card</p></div>");
+	var largeCard = create("<div id=\"fadedBackground\" onclick=\"minimizeCard()\"></div><div id=\"largeCard\"><h1 class=\"largeCardTitle\" onclick=\"catchIt()\">"+card.title+"</h1><p class=\"largeCardDescription\" onclick=\"catchIt()\">"+card.description+"</p><div id=\"commentSection\"><div id=\"comments\"></div><p id=\"addComment\" onclick=\"addComment()\">add comment</p></div><p class=\"deleteCard\" onclick=\"deleteCard()\">Delete Card</p></div>");
 	document.getElementById("body").insertBefore(largeCard, document.getElementById("body").firstChild);
 	var arrayLength = card.comments.length;
 	for (var i = 0; i < arrayLength; i++) {
-	    addCommentFromObject(card.comments[i], i);
+	    addCommentFromObject(card.comments[i].text, card.comments[i].ID);
 	}
 }
 
 function minimizeCard() {
 	document.getElementById("body").removeChild(document.getElementById("fadedBackground"));
 	document.getElementById("body").removeChild(document.getElementById("largeCard"));
+	editing = false;
 }
 
 function deleteCard() {
@@ -169,10 +220,14 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 }
 
 function addComment() {
-	var commentId = getCardObjectById(enlargeCardId).comments.length + 1;
+	commentId++;
+	var card = getCardObjectById(enlargeCardId);
 	var comment = create("<div id=\"comment"+commentId+"\" class=\"comment\"><p class=\"deleteComment\" onclick=\"deleteComment("+commentId+")\">delete</p><p class=\"divider\">    |    </p><p class=\"commentText\" onclick=\"catchIt()\">enter text here</p></div>");
 	document.getElementById("comments").appendChild(comment)
-	getCardObjectById(enlargeCardId).addComment("enter text here");
+	console.log('BEFORE: ID="'+card.comments[card.comments.length-1].ID+'"    text="'+card.comments[card.comments.length-1].text+'"');
+	card.addComment(commentId, "enter text here");//getCardObjectById(enlargeCardId).addComment(commentId, "enter text here");
+	console.log('AFTER: ID="'+card.comments[card.comments.length-1].ID+'"    text="'+card.comments[card.comments.length-1].text+'"');
+	sendSQL('insert','comment',card.id);
 }
 
 function addCommentFromObject(commentText, i) {
@@ -183,6 +238,7 @@ function addCommentFromObject(commentText, i) {
 function deleteComment(id) {
 	document.getElementById("comment"+id).remove();
 	getCardObjectById(enlargeCardId).deleteComment(id);
+	sendSQL('delete', 'comment', id);
 }
 
 function create(htmlStr) {
@@ -209,12 +265,14 @@ function drop(ev) {
     var data = document.getElementById(cardDragId);
     var cards = ev.target.firstElementChild;
     cards.appendChild(data);
+	//console.log('id='+cardDragId+'     color='+ev.target.id.toString().slice(0,-3));
+	sendSQL('update','card',cardDragId,'COLOR',ev.target.id.toString().slice(0,-3));
 }
 
 var editing  = false;
 var title = false;
 var comment = false;
-var butt; // Wait to initialize the butt
+var butt;
 var commentEditId;
 
 if (document.getElementById && document.createElement) {
@@ -226,9 +284,11 @@ if (document.getElementById && document.createElement) {
 
 function catchIt(e) {
 	if (editing) {
+		console.log("editing");
 		return;
 	}
 	if (!document.getElementById || !document.createElement) {
+		console.log("doc");
 		return;
 	}
 	if (!e) var obj = window.event.srcElement;
@@ -268,20 +328,24 @@ function catchIt(e) {
 
 function saveEdit() {
 	var area = document.getElementsByTagName('TEXTAREA')[0];
+	var card = getCardObjectById(enlargeCardId);
 	if (title) {
 		var y = document.createElement('H1');
 		y.className += " largeCardTitle";
 		document.getElementById(enlargeCardId).getElementsByTagName("h1")[0].innerHTML = area.value;
-		getCardObjectById(enlargeCardId).title = area.value;
+		card.title = area.value;
+		sendSQL('update','card',enlargeCardId,'TITLE',area.value);
 	} else if (comment) {
 		var y = document.createElement('P');
 		y.className += "commentText";
-		getCardObjectById(enlargeCardId).updateComment(area.value, commentEditId);
+		getCardObjectById(enlargeCardId).updateComment(commentEditId, area.value);
+		sendSQL('update','comment',commentEditId,'text',area.value);
 	} else {
 		var y = document.createElement('P');
 		y.className += " largeCardDescription"
 		document.getElementById(enlargeCardId).getElementsByTagName("p")[0].innerHTML = area.value;
-		getCardObjectById(enlargeCardId).description = area.value;
+		card.description = area.value;
+		sendSQL('update','card',enlargeCardId,'DESCRIPTION',area.value);
 	}
 	var z = area.parentNode;
 	y.addEventListener("click", catchIt)
@@ -294,69 +358,37 @@ function saveEdit() {
 
 class CardObject {
 
-	constructor(id, title, cardType, update) {
+	constructor(id, title) {
 		this.id = id;
-		this.cardType = cardType;
 		this.title = title;
 		this.description = "";
-		this.comments = ["test comment 1", "test comment 2", "test comment 3"];
-		if (update) {
-			firebase.database().ref('cards/' + id).set({
-				cardType: this._cardType,
-				title: this._title,
-				description: this._description,
-				comments: this._comments
-			});
-		}
+		this.comments = [];
 	}
 
 	get id() { return this._id; }
-	get cardType() { return this._cardType; }
 	get title() { return this._title; }
 	get description() { return this._description; }
 	get comments() { return this._comments;	}
 
 	set id(newId) { this._id = newId; }
-	set cardType(newCardType) {
-		this._cardType = newCardType;
-		firebase.database().ref('cards/' + this._id).update({cardType: newCardType});
-	}
-	set title(newTitle) {
-		this._title = newTitle;
-		firebase.database().ref('cards/' + this._id).update({title: newTitle});
-	}
-	set description(newDescription) {
-		this._description = newDescription;
-		firebase.database().ref('cards/' + this._id).update({description: newDescription});
-	}
-	set comments(newComments) {
-		this._comments = newComments;
-		firebase.database().ref('cards/' + this._id).update({comments: newComments});
+	set title(newTitle) { this._title = newTitle; }
+	set description(newDescription) { this._description = newDescription; }
+	set comments(newComments) { this._comments = newComments; }
+
+	addComment(id, comment) {
+		var item = {'ID':id,'text':comment};
+		this._comments.push(item);
 	}
 
-	updateCardType(newCardType) {
-		this._cardType = newCardType;
-	}
-	updateTitle(newTitle) {
-		this._title = newTitle;
-	}
-	updateDescription(newDescription) {
-		this._description = newDescription;
-	}
-	updateComments(newComments) {
-		this._comments = newComments;
-	}
-
-	addComment(comment) {
-		this._comments.push(comment);
-	}
-
-	updateComment(comment, i) {
-		this._comments[i] = comment;
-	}
-
-	// TODO: Fix deletion bug
 	deleteComment(id) {
-		this._comments.splice(id, 1);
+		for (var i=0; i<this._comments.length; i++)
+			if (this._comments[i].ID == id)
+				this._comments.splice(i, 1);
+	}
+
+	updateComment(id, comment) {
+		for (var i=0; i<this._comments.length; i++)
+			if (this._comments[i].ID == id)
+				this._comments[i].text = comment;
 	}
 }

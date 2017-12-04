@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="board.css">
     <link href="https://fonts.googleapis.com/css?family=Oswald|PT+Serif" rel="stylesheet">
     <script type="text/javascript" src="scripts/board.js"></script>
+	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.js"></script>
+		<script>
+			loadSQL();
+			//var socket = io('http://localhost:3000');
+			//socket.on('message', function(message) {
+			//		console.log(message);
+			//});
+		</script>
     <title>Toyota Project Board</title>
   </head>
   <body id="body">
@@ -14,36 +23,21 @@
       <div id="redCol" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="redCards">
         </div>
-        <button class="addCard" id="addRedCard" onclick="addRedCard()">+</button>
+        <button class="addCard" id="addRedCard" onclick="addCard('red')">+</button>
       </div>
 
       <div id="yellowCol" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="yellowCards">
         </div>
-        <button class="addCard" id="addYellowCard" onclick="addYellowCard()">+</button>
+        <button class="addCard" id="addYellowCard" onclick="addCard('yellow')">+</button>
       </div>
 
       <div id="greenCol" ondrop="drop(event)" ondragover="allowDrop(event)">
         <div id="greenCards">
         </div>
-        <button class="addCard" id="addGreenCard" onclick="addGreenCard()">+</button>
+        <button class="addCard" id="addGreenCard" onclick="addCard('green')">+</button>
       </div>
 
     </div>
-
   </body>
-  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-database.js"></script>
-  <script>
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyBsvjrtGeqRbi-EWV-vl9T49B9f1E4Uv_4",
-      authDomain: "toyota-project-board.firebaseapp.com",
-      databaseURL: "https://toyota-project-board.firebaseio.com",
-      projectId: "toyota-project-board",
-      storageBucket: "",
-      messagingSenderId: "71634172739"
-    };
-    firebase.initializeApp(config);
-  </script>
 </html>

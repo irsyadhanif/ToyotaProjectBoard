@@ -1,23 +1,42 @@
-"use strict";
-var mysql = requirejs('mysql');
-var card = requirejs('./card.js');
+var mysql = require('mysql');
+var async = require('async');
+var card = require('./card.js');
 
-class SQLController {
-    constructor(host, username, password, database) {
+function SQLController(host, username, password, database) {
+		this.cards = [];
+		this.cardCols = ['ID','TITLE','DESCRIPTION','COLOR'];
+		this.commentCols = ['ID','CardID','TEXT'];
+
         this.connection = mysql.createConnection({
             host:     host,
             user:     username,
             password: password,
             database: database
         });
-        this.connection.connect();
-    }
+        this.connection.connect((err) => {
+			if (err) {
+				console.log('Error connecting to DB');
+				return;
+			}
+			console.log('Connected!');
+		});
+}
 
-    endConnection() {
-        this.connection.end();
-    }
+SQLController.prototype.endConnection = function() {
+        this.connection.end((err) => {
+			if (err) {
+				console.log('Error disconnecting from DB');
+				return;
+			}
+			console.log('Disconnected!');
+		});
+};
 
-    SQLInsert(entry) {
+SQLController.prototype.SQLsleep = function (ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+SQLController.prototype.SQLInsert = function(entry) {
         var table = entry.getTable();
         var entries = entry.getEntries();
         var fields = entry.getFields();
@@ -30,22 +49,50 @@ class SQLController {
             console.log('Entry created');
         });
 
-    }
+};
 
 
-    SQLSelect(entry) {
-        var table = entry.getTable();
+SQLController.prototype.SQLSelect = function(table) {
         var query = "SELECT * from " + table + ";";
-        //console.log(query);
-        var result = this.connection.query(query, function (error, results, fields) {
-            if (error) throw error;
-            return results;
-        });
-        //console.log(result);
-        return result;
-    }
+        this.connection.query(query, (err,rows) => {
+			if(err) throw err;
+			console.log('Data received from Db:\n');
+		
+			this.cards = row;
+		  	//rows.forEach( (row) => { 
+			//	this.cards.push(row);
+		  	//	//console.log(`${row.TITLE} is in \"${row.DESCRIPTION}\"`); 
+		  	//});
 
-    SQLDelete(card) {
+			//console.log(this.cards);
+			return this.cards;
+			//this.cards = [];
+			//async.each(rows, function(row, callback) {
+			//	this.cards.push(row);
+			//	callback();
+			//}, function(err) {
+			//	if (err) throw err;
+			//	this.SQLsleep(100);
+			//	return this.cards;
+			//});
+
+			//console.log(rows[0].TITLE);
+			//\return this.cards[0].TITLE;
+		});
+
+		//var result = this.connection.query(query, function (error, results, fields) {
+        //    if (error) throw error;
+        //    return results;
+        //});
+        //console.log(result);
+        //return cards; // result;
+};
+
+SQLController.prototype.getCards = function() {
+		return this.cards;
+};
+
+SQLController.prototype.SQLDelete = function(card) {
         // get info - table name, id
         //var table = card.getTable();
         //var id    = card.getID();
@@ -57,9 +104,9 @@ class SQLController {
             if (error) throw error;
             console.log('Entry deleted.');
         });
-    }
+};
 
-    SQLEdit(card, entry) {
+SQLController.prototype.SQLEdit = function(card, entry) {
         // get card info - id
         var table   = card.getTable();
         var id      = card.getID();
@@ -80,8 +127,10 @@ class SQLController {
             return results;
         });
         return result;
-    }
+};
 
-}
+
+
+
 
 module.exports = SQLController;

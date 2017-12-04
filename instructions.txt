@@ -1,0 +1,27 @@
+MySQL
+- install
+- start service, something like "systemctl start mysql.service"
+- "mysql -u root -p" to access mysql with password 'toyota'
+	- SQL script below to create DB and tables and user
+
+CREATE DATABASE toyota;
+
+CREATE TABLE toyota.card (
+ID int NOT NULL AUTO_INCREMENT,
+TITLE varchar(100) NOT NULL,
+DESCRIPTION varchar(1024) NOT NULL,
+COLOR varchar(6) NOT NULL,
+PRIMARY KEY (ID)
+);
+
+CREATE TABLE toyota.comment (
+ID int NOT NULL AUTO_INCREMENT,
+CardID int NOT NULL,
+text varchar (1024),
+PRIMARY KEY (ID)
+);
+
+GRANT SELECT, INSERT, UPDATE, DELETE
+ON toyota.* TO 'logan'@'%' IDENTIFIED BY 'toyota';
+
+	- 

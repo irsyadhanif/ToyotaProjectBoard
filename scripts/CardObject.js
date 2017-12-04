@@ -4,7 +4,7 @@ class CardObject {
 		this.id = id;
 		this.title = title;
 		this.description = "";
-		this.comments = ["test comment 1", "test comment 2", "test comment 3"];
+		this.comments = [{'ID':'1','text':'Test Comment 1'},{'ID':'2','text':'Test Comment 2'},{'ID':'3','text':'Test Comment 3'}];
 	}
 
 	get id() { return this._id; }
@@ -22,6 +22,9 @@ class CardObject {
 	}
 
 	function deleteComment(id) {
-		this._comments.splice(id, 1);
+		//this._comments.splice(id, 1);
+		for (var i=0; this._comments.length; i++)
+			if (this._comments[i].ID == id)
+				this._comments.splice(i, 1);
 	}
 }
