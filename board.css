@@ -18,8 +18,32 @@ h1 {
 	font-family: 'Oswald', sans-serif;
 }
 
+h3 {
+	font-size: 16pt;
+	font-family: 'Oswald', sans-serif;
+	display: inline;
+	color: #FFF;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 p {
 	font-family: 'PT Serif', serif;
+}
+
+#header {
+	padding: 10px;
+	background-color: #777;
+}
+
+#boardTitle {
+	font-family: 'Oswald', sans-serif;
+	display: inline;
+}
+
+#colButtons {
+	display: inline;
+	float: right;
 }
 
 #board {
@@ -61,6 +85,24 @@ p {
 	margin: 0px;
 }
 
+#col4 {
+	float: left;
+    width: 25%;
+    min-height: 100%;
+	height: 5000px;
+	background-color: grey;
+	margin: 0px;
+}
+
+#col5 {
+	float: left;
+    width: 20%;
+    min-height: 100%;
+	height: 5000px;
+	background-color: #555;
+	margin: 0px;
+}
+
 .greenCard {
 	color: black;
 	background-color: white;
@@ -97,6 +139,30 @@ p {
     transition: 0.3s;
 }
 
+.col4Card {
+	color: black;
+	background-color: white;
+	border-radius: 5px;
+	border-color: black;
+	border-width: 5px;
+	margin: 10px;
+	padding: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.col5Card {
+	color: black;
+	background-color: white;
+	border-radius: 5px;
+	border-color: black;
+	border-width: 5px;
+	margin: 10px;
+	padding: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
 .titleText {
 	line-height: 1.5em;
     height: 1.5em;
@@ -114,15 +180,15 @@ p {
 }
 
 .addCard {
-	padding-top: 8px;
-	padding-bottom: 8px;
+	padding-top: 6px;
+	padding-bottom: 36px;
 	padding-left: 16px;
 	padding-right: 16px;
 	height: 44px;
-	width: 44px;
+	width: 90%;
 	text-align: center;
 	font-size: 24px;
-	border-radius: 50%;
+	border-radius: 10px;
 	border: none;
 	color: white;
 	background-color: black;
@@ -133,8 +199,8 @@ p {
 	text-decoration: none;
 	-webkit-appearance: button;
 	margin-top: 20px;
-	margin-left: 50%;
-	margin-right: 50%;
+	margin-left: 5%;
+	margin-right: 5%;
 	margin-bottom: 10px;
 	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -224,15 +290,3 @@ p {
 .commentText {
 	display: inline;
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -15,6 +15,64 @@ var enlargeCardType;
 var cardDragId;
 var cardObjects = [];
 
+function colSetup(numOfCols) {
+	switch(numOfCols) {
+		case '3':
+			var redElem = document.getElementById("redCol");
+			redElem.style.width = "33.33%";
+			var yellowElem = document.getElementById("yellowCol");
+			yellowElem.style.width = "33.33%";
+			var greenElem = document.getElementById("greenCol");
+			greenElem.style.width = "33.33%";
+			if (document.contains(document.getElementById("col4"))) {
+				document.getElementById("col4").remove();
+			}
+			if (document.contains(document.getElementById("col5"))) {
+				document.getElementById("col5").remove();
+			}
+			break;
+		case '4':
+			var redElem = document.getElementById("redCol");
+			redElem.style.width = "25%";
+			var yellowElem = document.getElementById("yellowCol");
+			yellowElem.style.width = "25%";
+			var greenElem = document.getElementById("greenCol");
+			greenElem.style.width = "25%";
+			if (!document.contains(document.getElementById("col4"))) {
+				var card = create("<div id=\"col4\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"><div id=\"col4Cards\"></div><button class=\"addCard\" id=\"addCol4Card\" onclick=\"addCard('col4')\">+</button></div>");
+				document.getElementById("board").appendChild(card);
+			}
+			var col4Elem = document.getElementById("col4");
+			col4Elem.style.width = "25%";
+			if (document.contains(document.getElementById("col5"))) {
+				document.getElementById("col5").remove();
+			}
+			break;
+		case '5':
+			var redElem = document.getElementById("redCol");
+			redElem.style.width = "20%";
+			var yellowElem = document.getElementById("yellowCol");
+			yellowElem.style.width = "20%";
+			var greenElem = document.getElementById("greenCol");
+			greenElem.style.width = "20%";
+			if (!document.contains(document.getElementById("col4"))) {
+				var col4 = create("<div id=\"col4\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"><div id=\"col4Cards\"></div><button class=\"addCard\" id=\"addCol4Card\" onclick=\"addCard('col4')\">+</button></div>");
+				document.getElementById("board").appendChild(col4);
+			}
+			var col4Elem = document.getElementById("col4");
+			col4Elem.style.width = "20%";
+			if (!document.contains(document.getElementById("col5"))) {
+				var col5 = create("<div id=\"col5\" ondrop=\"drop(event)\" ondragover=\"allowDrop(event)\"><div id=\"col5Cards\"></div><button class=\"addCard\" id=\"addCol5Card\" onclick=\"addCard('col5')\">+</button></div>");
+				document.getElementById("board").appendChild(col5);
+			}
+			var col5Elem = document.getElementById("col5");
+			col5Elem.style.width = "20%";
+			break;
+		default:
+			break;
+	}
+}
+
 function color ($colr) {
 	//var socket = io('http://localhost:3000');
 	//socket.emit('color', $colr);
@@ -65,8 +123,12 @@ function addCard(color) {
 			addRedCard();
 		else if (color == 'yellow')
 			addYellowCard();
-		else
+		else if (color == 'green')
 			addGreenCard();
+		else if (color == 'col4')
+			addCol4Card();
+		else
+			addCol5Card();
 	}, (400));
 }
 
@@ -178,6 +240,72 @@ function deleteRedCard(idToDelete) {
 	sendSQL('delete', 'card', idToDelete);
 }
 
+function addCol4Card(data) {
+	//color('green');
+	var title="",desc="",id=cardId,comms=[];
+	if (data === undefined) {
+		title = 'Title';
+		desc = "Add A Description";
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 1"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 2"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 3"});
+	} else {
+		title = data.TITLE;
+		desc = data.DESCRIPTION;
+		id = data.ID;
+		if (data.COMMENTS.length > 0)
+			for (var i=0; i<data.COMMENTS.length; i++)
+				comms.push(data.COMMENTS[i]);
+	}
+	var card = new CardObject(id, title);
+	card.description = desc;
+	card.comments = comms;
+	cardObjects.push(card);
+	var card = create("<div id=\""+id+"\" class=\"col4Card\" onclick=\"enlargeCard(\'col4\',\'"+id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+title+"</h1><p class=\"descriptionText\">"+desc+"</p></div>");
+	document.getElementById("col4Cards").appendChild(card);
+}
+
+function deleteCol4Card(idToDelete) {
+	document.getElementById(""+idToDelete).remove();
+	sendSQL('delete', 'card', idToDelete);
+}
+
+function addCol5Card(data) {
+	//color('green');
+	var title="",desc="",id=cardId,comms=[];
+	if (data === undefined) {
+		title = 'Title';
+		desc = "Add A Description";
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 1"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 2"});
+		commentId++;
+		comms.push({'ID':commentId,'text':"Test Comment 3"});
+	} else {
+		title = data.TITLE;
+		desc = data.DESCRIPTION;
+		id = data.ID;
+		if (data.COMMENTS.length > 0)
+			for (var i=0; i<data.COMMENTS.length; i++)
+				comms.push(data.COMMENTS[i]);
+	}
+	var card = new CardObject(id, title);
+	card.description = desc;
+	card.comments = comms;
+	cardObjects.push(card);
+	var card = create("<div id=\""+id+"\" class=\"col5Card\" onclick=\"enlargeCard(\'col5\',\'"+id+"\')\" draggable=\"true\" ondragstart=\"drag(event)\"><h1 class=\"titleText\">"+title+"</h1><p class=\"descriptionText\">"+desc+"</p></div>");
+	document.getElementById("col5Cards").appendChild(card);
+}
+
+function deleteCol5Card(idToDelete) {
+	document.getElementById(""+idToDelete).remove();
+	sendSQL('delete', 'card', idToDelete);
+}
+
 function enlargeCard(type, id) {
 	enlargeCardType = type;
 	enlargeCardId = id;
@@ -205,6 +333,10 @@ function deleteCard() {
 		deleteYellowCard(enlargeCardId);
 	} else if (enlargeCardType == "green") {
 		deleteGreenCard(enlargeCardId);
+	} else if (enlargeCardType == "col4") {
+		deleteCol4Card(enlargeCardId);
+	} else if (enlargeCardType == "col5") {
+		deleteCol5Card(enlargeCardId);
 	}
 }
 
